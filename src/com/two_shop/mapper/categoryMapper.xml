@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.two_shop.dao.categoryMapper">
+	<!-- 分页查询 -->
+	<select id="selectPage" resultType="Category">
+		select * from category where 1=1
+		<if test="id!=null">and id=#{id}</if>
+		<if test="name!=null and name!=''">and name=#{name}</if>
+		order by  id ASC limit #{currentPage},#{pageSize}
+	</select>
+	
+	<!-- 查询数目 -->
+	<select id="count" resultType="int">
+		select count(1) as count from category where 1=1
+		<if test="id!=null">and id=#{id}</if>
+		<if test="name!=null and name!=''">and name=#{name}</if>
+	</select>
+	
+	<!-- 添加商品类别 -->
+	<insert id="categoryAdd" parameterType="int">
+		insert into category(id,name)values(#{id},#{name})
+	</insert>
+	
+	<!-- 删除商品类别 -->
+	<delete id="categoryDelete" parameterType="int">
+		delete from category where id=#{id}
+	</delete>
+	
+	<!-- 查询商品表 -->
+	<select id="productById" resultType="Product">
+		select c.*,p.* from category c,product p where c.id=p.cid
+		<if test="id!=null">and c.id=#{id}</if>
+	</select>
+	
+	<!-- 一对多查询商品 -->
+	<resultMap type="Category" id="cProductLict">
+		<id property="id" column="id"></id>
+		<result property="name" column="name"/>
+		<collection property="product" ofType="Product" resultMap="productList">
+		</collection>
+ 	</resultMap>
+ 	<resultMap type="Product" id="productList">
+ 		<id property="id" column="pid"/>
+ 		<result property="cid" column="cid"></result>
+ 		<result property="name" column="name"/>
+ 		<result property="pdesc" column="pdesc"/>
+ 		<result property="img" column="img"/>
+ 	</resultMap>
+ 	<select id="categoryList" resultMap="cProductLict" parameterType="String">
+ 		select c.*,p.id as pid ,p.name,p.img,p.pdesc from category c,product p where c.id=p.cid and c.name=#{name}
+ 	</select>
+ 	
+ 	<!-- 查询商品类别 -->
+ 	<select id="selectList" resultType="Category">
+ 		select * from category
+ 	</select>
+ 	
+ 	<!-- 后台修改 -->
+ 	<update id="categoryUpdate" >
+ 		update category set name=#{name} where id=#{id}
+ 	</update>
+ 	<!-- 后台根据id获取name -->
+ 	<select id="getnameByid" resultType="Category">
+ 		select * from category where id=#{id}
+ 	</select>
+</mapper>

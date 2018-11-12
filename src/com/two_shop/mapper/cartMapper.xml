@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.two_shop.dao.cartMapper">
+	
+	<insert id="cartAdd">
+		insert into cart(user_id,product_id,quantity,gmt_create,gmt_modified)
+		values(#{user_id},#{product_id},#{quantity},#{gmt_create},#{gmt_modified})
+	</insert>
+	
+	<select id="cartList" resultMap="carttt">
+		SELECT p.id AS pid,p.img,p.name,p.price,u.id AS uid,ct.* FROM USER u,cart ct,product p WHERE u.id = ct.user_id AND p.id = ct.product_id
+		<if test="user_id!=null">and ct.uid=#{uid}</if> 
+	</select>
+	
+	
+	<resultMap type="Cart" id="carttt">
+	  <id property="id" column="id"/>
+	  <result property="user_id" column="user_id"/>
+	  <result property="product_id" column="product_id"/>
+	  <result property="quantity" column="quantity"/>
+	  <result property="gmt_create" column="gmt_create"/>
+	  <result property="gmt_modified" column="gmt_modified"/>
+	  
+	  <association property="product" javaType="Product">
+	  <id property="id" column="pid"/>
+	  <result property="name" column="name"/>
+	  <result property="price" column="price"/>
+	  <result property="img" column="img"/>
+	  <result property="pdesc" column="pdesc"/>
+	  <result property="cid" column="cid"/>
+	  </association>
+	  
+	 <association property="user" javaType="User">
+	  <id property="id" column="uid"/>
+	  </association>
+	</resultMap>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.two_shop.dao.addressMapper">
+	<!-- 查询地址 -->
+	<select id="selectById" resultType="Address">
+	   select * from address where 1=1 
+	   <if test="id!=null">and id=#{id}</if>
+	</select>
+	<!-- 根据用户id查询地址 -->
+	<select id="selectByUid" resultType="Address">
+		select * from address where uid=#{uid}
+	</select>
+	<!-- 添加地址 -->
+	<insert id="addressAdd">
+		insert into address(province,city,county,detailed,uid,aname,atel)
+		values(#{province},#{city},#{county},#{detailed},#{uid},#{aname},#{atel})
+	</insert>
+	
+	<!-- 删除地址 -->
+	<delete id="addressDelete">
+		delete from address from id=#{id}
+	</delete>
+	
+	<!-- 修改地址 -->
+	<update id="addressUpdate">
+	    update address
+	    <trim prefix="set" suffix="where id=#{id}" suffixOverrides=",">
+	    	<if test="province!=null and province!=''">province=#{province},</if>
+	    	<if test="city!=null and city!=''">city=#{city},</if>
+	    	<if test="county!=null and county!=''">county=#{county},</if>
+	    	<if test="detailed!=null and detailed!=''">detailed=#{detailed},</if>
+	    	<if test="aname!=null and aname!=''">aname=#{aname},</if>
+	    	<if test="atel!=null and atel!=''">atel=#{atel},</if>
+	    	<if test="uid!=null and uid!=''">uid=#{uid}</if>
+	    </trim>
+	</update>
+</mapper>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.two_shop.dao.productMapper">
+	<!-- 分页显示商品 -->
+	<select id="productPage" resultType="Product">
+		select * from product where 1=1
+		<if test="name!=null and name!=''">and name like concat('%',#{name},'%')</if>
+		<if test="cid!=null">and cid=#{cid}</if> 
+		order by gmt_create desc limit #{currentPage},#{pageSize}
+	</select>
+	
+	<!-- 根据id查询 -->
+	<select id="getProductById" resultType="Product">
+		select * from product where id=#{id}
+	</select>
+	
+	<!-- 查询商品数目 -->
+	<select id="count" resultType="int">
+		select count(1) as counts from product where 1=1
+		<if test="name!=null and name!=''">and name like concat('%',#{name},'%')</if>
+		<if test="cid!=null">and cid=#{cid}</if> 
+	</select>
+	
+	<!-- 添加商品 -->
+	<insert id="productAdd">
+		insert into product(id,name,price,img,pdesc,state,stock,cid,gmt_create,gmt_modified)
+		values(#{id},#{name},#{price},#{img},#{pdesc},#{state},#{stock},#{cid},#{gmt_create},#{gmt_modified})
+	</insert>
+	
+	<!-- 删除商品 -->
+	<delete id="productDelete">
+		delete from product where id=#{id}
+	</delete>
+	
+	<!-- 修改商品 -->
+	<update id="productUpdate">
+		update  product 
+		<trim prefix="set" suffix="where id=#{id}" suffixOverrides=",">
+			<if test="name!=null and name!=''">name=#{name},</if>
+			<if test="price!=null">price=#{price},</if>
+			<if test="img!=null and img!=''">img=#{img},</if>
+			<if test="pdesc!=null and pdesc!=''">pdesc=#{pdesc},</if>
+			<if test="state!=null">state=#{state},</if>
+			<if test="stock!=null">stock=#{stock},</if>
+			<if test="cid!=null">cid=#{cid},</if>
+			<if test="gmt_create!=null and gmt_create!=''">gmt_create=#{gmt_create},</if>
+			<if test="gmt_modified!=null and gmt_modified!=''">gmt_modified=#{gmt_modified}</if>
+		</trim>
+	</update>
+	
+	
+	<!-- 商品库存 -->
+	<select id="getStock" resultType="Product">
+		select * from product where stock <![CDATA[ < ]]> 100 
+	</select>
+	
+	<!-- 查询商品价格 -->
+	<select id="getPrice" resultType="Product">
+		SELECT * FROM product ORDER BY  price  ASC  LIMIT 4
+	</select>
+	
+	<!-- 查询商品更新时间 -->
+	<select id="getTime" resultType="Product">
+		SELECT * FROM product ORDER BY  gmt_create DESC LIMIT 4
+	</select>
+	
+	<!-- 查询商品数量 -->
+	<select id="getNum" resultType="Product">
+		SELECT * FROM product ORDER BY  stock ASC LIMIT 4
+	</select>
+</mapper>

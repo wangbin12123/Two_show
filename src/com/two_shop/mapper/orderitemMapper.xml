@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.two_shop.dao.orderitemMapper">
+	<!-- 订单明细——商品一对一 -->
+	<resultMap type="order_item" id="order_itemList">
+		<id property="id" column="id"/>
+		<result property="pid" column="pid"/>
+		<result property="num" column="num"/>
+		<result property="oid" column="oid"/>
+		<result property="price" column="price"/>
+		<association property="product" javaType="Product">
+			<id property="id" column="p_id"/>
+			<result property="name" column="name"/>
+			<result property="img" column="img"/>
+		</association>
+	</resultMap>
+	<!-- 分页查询订单明细 -->
+	<select id="orderById" resultMap="order_itemList">
+		select o.*,p.id as p.p_id,p.name,p.img from order_item o,product p where o.pid=p.id
+		<if test="oid!=null and oid!=''">o.oid=#{oid}</if>
+		order by price limit #{currentPage},#{pageSize}
+	</select>
+	
+	<!-- 查询订单明细数目-->
+	<select id="count" resultType="int">
+		select count(1) as count from order_item where 1=1
+		<if test="id!=null">id=#{id}</if>
+	</select>
+</mapper>

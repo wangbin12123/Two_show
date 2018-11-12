@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.two_shop.dao.orderMapper">
+	
+	<!-- 订单表关联地址表一对一 -->
+	<resultMap type="Order" id="orderList">
+	  <id property="id" column="id"/>
+	  <result property="sum_price" column="sum_price"/>
+	  <result property="address_id" column="address_id"/>
+	  <result property="uid" column="uid"/>
+	  <result property="state" column="state"/>
+	  <result property="gmt_create" column="gmt_create"/>
+	  <result property="gmt_modified" column="gmt_modified"/>
+	  
+	  <association property="address" javaType="Address">
+	  <id property="id" column="a_id"/>
+	  <result property="province" column="province"/>
+	  <result property="city" column="city"/>
+	  <result property="county" column="county"/>
+	  <result property="area" column="area"/>
+	  <result property="detailed" column="detailed"/>
+	  </association>
+	  
+	  <association property="product" javaType="Product">
+	  <id property="id" column="p_id"/>
+	  <result property="name" column="name"/>
+	  <result property="price" column="price"/>
+	  <result property="img" column="img"/>
+	  <result property="pdesc" column="pdesc"/>
+	  <result property="cid" column="cid"/>
+	  </association>
+	  
+	 <association property="user" javaType="User">
+	  <id property="id" column="u_id"/>
+	  </association>
+	</resultMap>
+	<!-- 订单分页查询 -->
+	<select id="orderById" resultMap="orderList">
+		SELECT o.*,a.id AS a_id,a.province,a.city,a.county,a.detailed,a.aname,a.atel,p.id AS p_id,p.cid,p.img,p.name,p.pdesc,p.price,u.id AS u_id,u.username 
+		FROM shop_order o,address a,product p,USER u
+		WHERE o.address_id=a.id AND o.product_id=p.id AND o.uid= u.id
+		<if test="uid!=null and uid!=''">and o.uid=#{uid}</if>
+		<if test="state!=null">and o.state=#{state}</if>
+		order by gmt_create limit #{currentPage},#{pageSize}
+	</select>
+	
+	<!-- 查询订单数目 -->
+	<select id="count" resultType="int">
+		select count(1) as count from shop_order where 1=1
+		<if test="uid!=null">and uid=#{uid}</if>
+		<if test="state!=null">and state=#{state}</if>
+	</select>
+	
+	<!-- 插入订单 -->
+	<insert id="addOrder" parameterType="Order" useGeneratedKeys="true" keyProperty="id">
+		insert into shop_order(sum_price,address_id,uid,gmt_create,product_id)
+		values(#{sum_price},#{address_id},#{uid},#{gmt_create},#{product_id})
+	</insert>
+	
+	<!-- 订单查询 -->
+	<select id="findOrder" resultType="Order" parameterType="int">
+		select * from shop_order where id=#{id}
+	</select>
+	
+	<!-- 订单删除 -->
+	<delete id="deleteOrder" parameterType="int">
+		delete from shop_order where id=#{id}
+	</delete>
+</mapper>
